@@ -1,0 +1,7 @@
+{"secret_key": "dd8ec904d1d84a95b545a740d47035d0",
+ "Endpoint": "https://adv-dl-conv-ai-sep-23-open-ai.openai.azure.com/",
+ "api_type": "azure",
+ "CHATGPT_MODEL": "gpt-35-turbo",
+ "version": "2023-07-01-preview",
+ "azure_doc_intel_key": "039e7ae76cb54209b910af8ec1fc6772",
+ "azure_doc_intel_endpoint": "https://adv-dl-conv-ai-sep-23-doc-intel.cognitiveservices.azure.com/"}
