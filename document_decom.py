@@ -1,3 +1,7 @@
+pip install azure-ai-formrecognizer==3.2.0
+pip install python-docx
+from azure.ai.formrecognizer import DocumentAnalysisClient
+from azure.core.credentials import AzureKeyCredential
 import json
 import pandas as pd
 import os
