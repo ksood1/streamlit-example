@@ -5,7 +5,7 @@ import openai
 from llama_index import SimpleDirectoryReader
 
 openai.api_key = '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'
-st.header("Chat with the Streamlit docs 💬 📚")
+st.header("Welcome to the RFP Generator 💬 📚")
 
 if "messages" not in st.session_state.keys(): # Initialize the chat message history
     st.session_state.messages = [
