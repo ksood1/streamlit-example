@@ -1,40 +1,43 @@
-import altair as alt
-import numpy as np
-import pandas as pd
 import streamlit as st
+from llama_index import VectorStoreIndex, ServiceContext, Document
+from llama_index.llms import OpenAI
+import openai
+from llama_index import SimpleDirectoryReader
 
-"""
-# Welcome to Streamlit!
+openai.api_key = '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'
+st.header("Chat with the Streamlit docs 💬 📚")
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:.
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+if "messages" not in st.session_state.keys(): # Initialize the chat message history
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Ask me a question about Streamlit's open-source Python library!"}
+    ]
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+@st.cache_resource(show_spinner=False)
+def load_data():
+    with st.spinner(text="Loading and indexing the Streamlit docs – hang tight! This should take 1-2 minutes."):
+        reader = SimpleDirectoryReader(input_dir="data_dir", recursive=True)
+        docs = reader.load_data()
+        service_context = ServiceContext.from_defaults(llm=OpenAI(model="gpt-3.5-turbo", temperature=0.5, system_prompt="You are an expert on the Streamlit Python library and your job is to answer technical questions. Assume that all questions are related to the Streamlit Python library. Keep your answers technical and based on facts – do not hallucinate features."))
+        index = VectorStoreIndex.from_documents(docs, service_context=service_context)
+        return index
 
-num_points = st.slider("Number of points in spiral", 1, 10000, 1100)
-num_turns = st.slider("Number of turns in spiral", 1, 300, 31)
+index = load_data()
 
-indices = np.linspace(0, 1, num_points)
-theta = 2 * np.pi * num_turns * indices
-radius = indices
+chat_engine = index.as_chat_engine(chat_mode="condense_question", verbose=True)
 
-x = radius * np.cos(theta)
-y = radius * np.sin(theta)
 
-df = pd.DataFrame({
-    "x": x,
-    "y": y,
-    "idx": indices,
-    "rand": np.random.randn(num_points),
-})
+if prompt := st.chat_input("Your question"): # Prompt for user input and save to chat history
+    st.session_state.messages.append({"role": "user", "content": prompt})
 
-st.altair_chart(alt.Chart(df, height=700, width=700)
-    .mark_point(filled=True)
-    .encode(
-        x=alt.X("x", axis=None),
-        y=alt.Y("y", axis=None),
-        color=alt.Color("idx", legend=None, scale=alt.Scale()),
-        size=alt.Size("rand", legend=None, scale=alt.Scale(range=[1, 150])),
-    ))
+for message in st.session_state.messages: # Display the prior chat messages
+    with st.chat_message(message["role"]):
+        st.write(message["content"])
+
+        # If last message is not from assistant, generate a new response
+if st.session_state.messages[-1]["role"] != "assistant":
+    with st.chat_message("assistant"):
+        with st.spinner("Thinking..."):
+            response = chat_engine.chat(prompt)
+            st.write(response.response)
+            message = {"role": "assistant", "content": response.response}
+            st.session_state.messages.append(message) # Add response to message history
