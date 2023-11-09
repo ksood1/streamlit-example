@@ -21,7 +21,7 @@ key = config_json["azure_doc_intel_key"]
 endpoint = config_json["azure_doc_intel_endpoint"]
 
 document_analysis_client = DocumentAnalysisClient(endpoint=endpoint, credential=AzureKeyCredential(key))
-with open("Client Call Center Strategy RFP_vFinal.pdf", "rb") as f:
+with open("/file_repo/Exhibit B - Energy Management Scope redacted.pdf", "rb") as f:
     poller = document_analysis_client.begin_analyze_document(
         "prebuilt-document", document=f
     )
@@ -43,7 +43,7 @@ paragraphs[0]
 df_paragraphs = pd.json_normalize(paragraphs)
 df_paragraphs
 
-df_paragraphs.to_csv('Client Call Center Strategy RFP_vFinal_paragraphs.csv')
+df_paragraphs.to_csv('Exhibit B - Energy Management Scope redacted_paragraph.csv')
 
 
 tables_json = []
@@ -64,4 +64,4 @@ tables_json[100:102]
 df_tables = pd.json_normalize(tables_json)
 df_tables
 
-df_tables.to_csv("Client Call Center Strategy RFP_tables.csv")
+df_tables.to_csv("Exhibit B - Energy Management Scope redacted.tables.csv")
